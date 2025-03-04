@@ -1,74 +1,65 @@
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL; // Ensure it's set in .env.local
 
-export  async function addData(currentTab,formData){
-        try{
-
-            const response = await fetch(`/${apiUrl}/${currentTab}/add`,{
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData)
-            })
-
-            const result = await response.json()
-
-            return result;
-
-        } catch(e){
-            console.log(e)
-        }
-}
-
-export async function getData(currentTab){
-    try{
-            const response = await fetch(`/${apiUrl}/${currentTab}/get`,{
-                method: "GET"
-            })
-            const result = await response.json()
-
-            return result
-    }catch(e){
-        console.log(e)
-    }
-}
-
-export  async function updateData(currentTab,formData){
-    try{
-
-        const response = await fetch(`/${apiUrl}/${currentTab}/update`,{
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData)
-        })
-
-        const result = await response.json()
-
-        return result;
-
-    } catch(e){
-        console.log(e)
-    }
-}
-
-export  async function Logindata(formData){
-    try{
-
-        const response = await fetch(`/${apiUrl}/login`,{
+export async function addData(currentTab, formData) {
+    try {
+        const response = await fetch(`${apiUrl}/${currentTab}/add`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(formData)
-        })
+            body: JSON.stringify(formData),
+        });
 
-        const result = await response.json()
-
+        const result = await response.json();
         return result;
+    } catch (e) {
+        console.log(e);
+    }
+}
 
-    } catch(e){
-        console.log(e)
+export async function getData(currentTab) {
+    try {
+        const response = await fetch(`${apiUrl}/${currentTab}/get`, {
+            method: "GET",
+            cache: "no-store",
+        });
+        const result = await response.json();
+        return result;
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export async function updateData(currentTab, formData) {
+    try {
+        const response = await fetch(`${apiUrl}/${currentTab}/update`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+        return result;
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export async function Logindata(formData) {
+    try {
+        const response = await fetch(`${apiUrl}/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+        return result;
+    } catch (e) {
+        console.log(e);
     }
 }

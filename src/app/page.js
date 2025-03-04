@@ -6,14 +6,14 @@ import ClientprojectView from "./clientcomponent/project";
 
 async function extractdata(currentSection){
     try{
-        const res = await fetch(`http://localhost:3000/api/${currentSection}/get`,{
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${currentSection}/get`,{
             method: 'GET',
             cache: "no-store",
         })
 
         const data = await res.json();
 
-        return data && data.data;
+        return data && data?.data;
 
     }catch(e){
         console.log(e)
