@@ -1,7 +1,9 @@
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 export  async function addData(currentTab,formData){
         try{
 
-            const response = await fetch(`/api/${currentTab}/add`,{
+            const response = await fetch(`/${apiUrl}/${currentTab}/add`,{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -20,7 +22,7 @@ export  async function addData(currentTab,formData){
 
 export async function getData(currentTab){
     try{
-            const response = await fetch(`/api/${currentTab}/get`,{
+            const response = await fetch(`/${apiUrl}/${currentTab}/get`,{
                 method: "GET"
             })
             const result = await response.json()
@@ -34,7 +36,7 @@ export async function getData(currentTab){
 export  async function updateData(currentTab,formData){
     try{
 
-        const response = await fetch(`/api/${currentTab}/update`,{
+        const response = await fetch(`/${apiUrl}/${currentTab}/update`,{
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -54,7 +56,7 @@ export  async function updateData(currentTab,formData){
 export  async function Logindata(formData){
     try{
 
-        const response = await fetch(`/api/login`,{
+        const response = await fetch(`/${apiUrl}/login`,{
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
