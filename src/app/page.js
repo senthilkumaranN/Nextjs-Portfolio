@@ -1,39 +1,54 @@
+"use client"; // Ensure it's a client component
+
+import { useEffect, useState } from "react";
 import ClientAboutView from "./clientcomponent/about";
 import ClientContactView from "./clientcomponent/contact";
 import ClientExperienceandEducationView from "./clientcomponent/experience";
 import ClientHomeView from "./clientcomponent/home";
 import ClientprojectView from "./clientcomponent/project";
 
-async function extractdata(currentSection){
-    try{
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${currentSection}/get`,{
-            method: 'GET',
-            cache: "no-store",
-        })
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-        const data = await res.json();
-
-        return data && data?.data;
-
-    }catch(e){
-        console.log(e)
-    }
+async function fetchData(section) {
+  try {
+    const res = await fetch(`${apiUrl}/${section}/get`, { cache: "no-store" });
+    const data = await res.json();
+    return data?.data;
+  } catch (e) {
+    console.error(`Error fetching ${section}:`, e);
+    return null;
+  }
 }
 
-export default async function Home(){
-    const homesectiondata = await extractdata('home');
-    const aboutsectiondata = await extractdata('about');
-    const experiencesectiondata = await extractdata('experience');
-    const educationsectiondata = await extractdata('education');
-    const projectsectiondata = await extractdata('project');
-    return(
-        <div>
-            <ClientHomeView data={homesectiondata} />
-            <ClientAboutView data={aboutsectiondata}/>
-            <ClientExperienceandEducationView experienceData={experiencesectiondata}
-            educationData={educationsectiondata}/>
-            <ClientprojectView data={projectsectiondata} />
-            <ClientContactView/>
-        </div>
-    )
+export default function Home() {
+  const [homeData, setHomeData] = useState(null);
+  const [aboutData, setAboutData] = useState(null);
+  const [experienceData, setExperienceData] = useState(null);
+  const [educationData, setEducationData] = useState(null);
+  const [projectData, setProjectData] = useState(null);
+
+  useEffect(() => {
+    async function fetchAllData() {
+      setHomeData(await fetchData("home"));
+      setAboutData(await fetchData("about"));
+      setExperienceData(await fetchData("experience"));
+      setEducationData(await fetchData("education"));
+      setProjectData(await fetchData("project"));
+    }
+
+    fetchAllData();
+  }, []);
+
+  return (
+    <div>
+      <ClientHomeView data={homeData} />
+      <ClientAboutView data={aboutData} />
+      <ClientExperienceandEducationView
+        experienceData={experienceData}
+        educationData={educationData}
+      />
+      <ClientprojectView data={projectData} />
+      <ClientContactView />
+    </div>
+  );
 }
