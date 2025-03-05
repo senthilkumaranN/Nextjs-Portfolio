@@ -35,6 +35,7 @@ export default function ClientAboutView({ data }) {
    
 
     const aboutData = data[0]
+   
     
 
     const setVariants = useMemo(() => variants(), []);
