@@ -23,10 +23,17 @@ export async function getData(currentTab) {
             method: "GET",
             cache: "no-store",
         });
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch data for ${currentTab}: ${response.status} ${response.statusText}`);
+        }
+
         const result = await response.json();
-        return result;
+        
+        return result?.data ? result : { data: [] };
     } catch (e) {
-        console.log(e);
+        console.error("Error fetching data:", e);
+        return { success: false, data: [] };  // Return a default object to prevent crashes
     }
 }
 

@@ -1,5 +1,8 @@
 "use client";
 
+
+
+
 import { useEffect, useState } from "react";
 import AdminHomeView from "../componets/home";
 import AdminAboutView from "../componets/about";
@@ -46,8 +49,8 @@ const initialLogindata = {
 export default function AdminView() {
 
     const [currentSelectedTab, setcurrentSelectedTab] = useState("home")
-    const [homeviewformdata, sethomeviewformdata] = useState(initialHomedata)
-    const [aboutviewformdata, setaboutviewformdata] = useState(initialAboutdata)
+    const [homeviewformdata, sethomeviewformdata] = useState(initialHomedata || {})
+    const [aboutviewformdata, setaboutviewformdata] = useState(initialAboutdata || {})
     const [projectviewformdata, setprojectviewformdata] = useState(initialProjectdata)
     const [experienceviewformdata, setexperienceviewformdata] = useState(initialExperiencedata)
     const [educationviewformdata, seteducationviewformdata] = useState(initialEducationHomedata)
@@ -60,7 +63,7 @@ export default function AdminView() {
         {
             id: 'home',
             label: 'Home',
-            component: <AdminHomeView formData={homeviewformdata} setformData={sethomeviewformdata}
+            component: <AdminHomeView formData={homeviewformdata || initialHomedata} setformData={sethomeviewformdata}
                 handlesavedata={handlesavedata} update={update} />
         },
         {
@@ -90,32 +93,36 @@ export default function AdminView() {
         {
             id: 'contact',
             label: 'Contact',
-            component: <AdminContactView  data={allData && allData?.contact}/>
+            component: <AdminContactView data={allData && allData?.contact} />
         }
     ]
 
     async function extractData() {
-        const response = await getData(currentSelectedTab)
-
-        if (currentSelectedTab === "home" && response &&
-            response.data &&
-            response.data.length) {
-            sethomeviewformdata(response && response.data[0])
-            setupdate(true);
-        }
-
-        if (currentSelectedTab === "about" && response && response.data &&
-            response.data.length) {
-            setaboutviewformdata(response && response.data[0])
-            setupdate(true);
-        }
-        if (response?.success) {
+        const response = await getData(currentSelectedTab);
+    
+        if (response?.success && Array.isArray(response.data) && response.data.length > 0) {
+            if (currentSelectedTab === "home") {
+                sethomeviewformdata(response.data[0] || initialHomedata); // Prevent accessing undefined
+                setupdate(true);
+            }
+            if (currentSelectedTab === "about") {
+                setaboutviewformdata(response.data[0] || initialAboutdata);
+                setupdate(true);
+            }
+    
             setallData({
                 ...allData,
-                [currentSelectedTab]: response && response.data
-            })
+                [currentSelectedTab]: response.data,
+            });
+        } else {
+            setallData({
+                ...allData,
+                [currentSelectedTab]: [],
+            });
         }
     }
+    
+
 
     function resetdata() {
         sethomeviewformdata(initialHomedata);
@@ -158,14 +165,17 @@ export default function AdminView() {
     }, [])
 
     useEffect(() => {
-        extractData()
-    }, [currentSelectedTab])
+        if (currentSelectedTab) {
+            extractData();
+        }
+    }, [currentSelectedTab]);
+    
 
     if (!authUser) return (
-    <Login formData={loginformdata} handleLogin={handleLogin} setformData={setloginformdata} />
+        <Login formData={loginformdata} handleLogin={handleLogin} setformData={setloginformdata} />
     );
 
-    
+
 
     return (
         <div className="border-b border-gray-200">
@@ -181,22 +191,26 @@ export default function AdminView() {
                                 setupdate(false)
                             }}>
                             {item.label}
-                            
+
                         </button>
-                       
+
                     ))
-                    }
-                    <button onClick={()=>{
-                        setauthUser(false)
-                        sessionStorage.removeItem('authUser')
-                    }} className="p-4 font-bold text-xl text-black">Logout</button>
-                
+                }
+                <button onClick={() => {
+                    setauthUser(false)
+                    sessionStorage.removeItem('authUser')
+                }} className="p-4 font-bold text-xl text-black">Logout</button>
+
             </nav>
             <div className="mt-10">
-                {
-                    menuItem.map((item) => item.id === currentSelectedTab && item.component)
-                }
+                {menuItem.map(
+                    (item) =>
+                        item.id === currentSelectedTab &&
+                        allData[item.id] &&  // ✅ Prevents rendering when data is `null`
+                        item.component
+                )}
             </div>
+
         </div>
     )
 }

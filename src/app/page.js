@@ -12,20 +12,26 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 async function fetchData(section) {
   try {
     const res = await fetch(`${apiUrl}/${section}/get`, { cache: "no-store" });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch ${section}, status: ${res.status}`);
+    }
+
     const data = await res.json();
-    return data?.data;
+    return data?.data ?? []; // Ensure an empty array is returned if data is null
   } catch (e) {
     console.error(`Error fetching ${section}:`, e);
-    return null;
+    return []; // Return an empty array instead of null
   }
 }
 
+
 export default function Home() {
-  const [homeData, setHomeData] = useState(null);
-  const [aboutData, setAboutData] = useState(null);
-  const [experienceData, setExperienceData] = useState(null);
-  const [educationData, setEducationData] = useState(null);
-  const [projectData, setProjectData] = useState(null);
+  const [homeData, setHomeData] = useState([]);
+  const [aboutData, setAboutData] = useState([]);
+  const [experienceData, setExperienceData] = useState([]);
+  const [educationData, setEducationData] = useState([]);
+  const [projectData, setProjectData] = useState([]);
 
   useEffect(() => {
     async function fetchAllData() {
